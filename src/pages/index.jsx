@@ -1,69 +1,33 @@
-import Layout from "./Layout.jsx";
+import Layout from "./Layout.jsx"
+import Landing from "./Landing.jsx"
 
-import Browse from "./Browse";
+import Browse from "./Browse"
+import ProfessionalProfile from "./ProfessionalProfile"
+import Versus from "./Versus"
+import Calendar from "./Calendar"
 
-import ProfessionalProfile from "./ProfessionalProfile";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom"
+import { createPageUrl } from "@/utils"
 
-import Versus from "./Versus";
-
-import Calendar from "./Calendar";
-
-import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
-
-const PAGES = {
-    
-    Browse: Browse,
-    
-    ProfessionalProfile: ProfessionalProfile,
-    
-    Versus: Versus,
-    
-    Calendar: Calendar,
-    
-}
-
-function _getCurrentPage(url) {
-    if (url.endsWith('/')) {
-        url = url.slice(0, -1);
-    }
-    let urlLastPart = url.split('/').pop();
-    if (urlLastPart.includes('?')) {
-        urlLastPart = urlLastPart.split('?')[0];
-    }
-
-    const pageName = Object.keys(PAGES).find(page => page.toLowerCase() === urlLastPart.toLowerCase());
-    return pageName || Object.keys(PAGES)[0];
-}
-
-// Create a wrapper component that uses useLocation inside the Router context
-function PagesContent() {
-    const location = useLocation();
-    const currentPage = _getCurrentPage(location.pathname);
-    
-    return (
-        <Layout currentPageName={currentPage}>
-            <Routes>            
-                
-                    <Route path="/" element={<Browse />} />
-                
-                
-                <Route path="/Browse" element={<Browse />} />
-                
-                <Route path="/ProfessionalProfile" element={<ProfessionalProfile />} />
-                
-                <Route path="/Versus" element={<Versus />} />
-                
-                <Route path="/Calendar" element={<Calendar />} />
-                
-            </Routes>
-        </Layout>
-    );
-}
+const APP_ROUTES = [
+  { name: "Browse", element: <Browse /> },
+  { name: "ProfessionalProfile", element: <ProfessionalProfile /> },
+  { name: "Versus", element: <Versus /> },
+  { name: "Calendar", element: <Calendar /> },
+]
 
 export default function Pages() {
-    return (
-        <Router>
-            <PagesContent />
-        </Router>
-    );
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<Landing />} />
+        <Route element={<Layout />}>
+          {APP_ROUTES.map(({ name, element }) => (
+            <Route key={name} path={createPageUrl(name)} element={element} />
+          ))}
+          <Route path="*" element={<Browse />} />
+        </Route>
+      </Routes>
+    </Router>
+  )
 }
