@@ -1,17 +1,18 @@
 
-import React, { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { PickupGame, Court, Player } from "@/api/entities";
-import { Plus, Calendar, MapPin, Users, Zap, Clock, DollarSign, Trophy } from "lucide-react";
+import { Plus, MapPin, Zap, Trophy, Grid, Map } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { motion, AnimatePresence } from "framer-motion";
-import { Badge } from "@/components/ui/badge";
 
 import GameCard from "../components/versus/GameCard";
 import CreateGameDialog from "../components/versus/CreateGameDialog";
 import GameFilters from "../components/versus/GameFilters";
 import CourtFinder from "../components/versus/CourtFinder";
+import GamesMap from "../components/versus/GamesMap";
+import CourtsMap from "../components/versus/CourtsMap";
 import Leaderboard from "../components/versus/Leaderboard";
 
 export default function Versus() {
@@ -24,6 +25,9 @@ export default function Versus() {
   const [showCreateGame, setShowCreateGame] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
   const [activeTab, setActiveTab] = useState("games");
+  const [gamesView, setGamesView] = useState("grid");
+  const [courtsView, setCourtsView] = useState("grid");
+  const [courtSearchQuery, setCourtSearchQuery] = useState("");
   const [filters, setFilters] = useState({
     sport: "",
     skill_level: "",
@@ -124,6 +128,25 @@ export default function Versus() {
     setShowCreateGame(false);
     loadGames();
   };
+
+  const filteredCourts = useMemo(() => {
+    if (!Array.isArray(courts)) return [];
+
+    if (!courtSearchQuery.trim()) {
+      return courts;
+    }
+
+    const query = courtSearchQuery.trim().toLowerCase();
+    return courts.filter((court) => {
+      const { location = {}, name = "", venue_name = "" } = court;
+      return (
+        name.toLowerCase().includes(query) ||
+        venue_name.toLowerCase().includes(query) ||
+        (location.city || "").toLowerCase().includes(query) ||
+        (location.state || "").toLowerCase().includes(query)
+      );
+    });
+  }, [courts, courtSearchQuery]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-white">
@@ -227,29 +250,37 @@ export default function Versus() {
           </AnimatePresence>
 
           {/* Games Tab */}
-          <TabsContent value="games" className="mt-0">
-            {isLoading ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {Array.from({ length: 6 }).map((_, i) => (
-                  <div key={i} className="h-64 bg-slate-200 rounded-xl animate-pulse" />
-                ))}
+          <TabsContent value="games" className="mt-0 space-y-6">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <h3 className="text-2xl font-semibold text-slate-900">Upcoming Pickup Games</h3>
+                <p className="text-slate-600">Explore matchups near you or switch to the map to see what's happening nearby.</p>
               </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <AnimatePresence>
-                  {filteredGames.map((game, index) => (
-                    <GameCard
-                      key={game.id}
-                      game={game}
-                      index={index}
-                      onJoin={() => loadGames()}
-                    />
-                  ))}
-                </AnimatePresence>
-              </div>
-            )}
+              <Tabs value={gamesView} onValueChange={setGamesView} className="w-full sm:w-auto">
+                <TabsList className="grid grid-cols-2 gap-1 bg-slate-100 rounded-lg p-1">
+                  <TabsTrigger value="grid" className="flex items-center gap-2 data-[state=active]:bg-white">
+                    <Grid className="w-4 h-4" />
+                    Grid
+                  </TabsTrigger>
+                  <TabsTrigger value="map" className="flex items-center gap-2 data-[state=active]:bg-white">
+                    <Map className="w-4 h-4" />
+                    Map
+                  </TabsTrigger>
+                </TabsList>
+              </Tabs>
+            </div>
 
-            {!isLoading && filteredGames.length === 0 && (
+            {isLoading ? (
+              gamesView === "grid" ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {Array.from({ length: 6 }).map((_, i) => (
+                    <div key={i} className="h-64 bg-slate-200 rounded-xl animate-pulse" />
+                  ))}
+                </div>
+              ) : (
+                <div className="h-96 bg-slate-200 rounded-2xl animate-pulse" />
+              )
+            ) : filteredGames.length === 0 ? (
               <div className="text-center py-16">
                 <div className="w-24 h-24 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Zap className="w-12 h-12 text-slate-400" />
@@ -266,12 +297,75 @@ export default function Versus() {
                   Create First Game
                 </Button>
               </div>
+            ) : gamesView === "grid" ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <AnimatePresence>
+                  {filteredGames.map((game, index) => (
+                    <GameCard
+                      key={game.id}
+                      game={game}
+                      index={index}
+                      onJoin={() => loadGames()}
+                    />
+                  ))}
+                </AnimatePresence>
+              </div>
+            ) : (
+              <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+                <GamesMap games={filteredGames} />
+              </div>
             )}
           </TabsContent>
 
           {/* Courts Tab */}
-          <TabsContent value="courts" className="mt-0">
-            <CourtFinder courts={courts} />
+          <TabsContent value="courts" className="mt-0 space-y-6">
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+              <div>
+                <h3 className="text-2xl font-semibold text-slate-900">Courts & Venues</h3>
+                <p className="text-slate-600">Compare venues in a list or discover new courts on the map.</p>
+              </div>
+              <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
+                <div className="relative flex-1">
+                  <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                  <Input
+                    value={courtSearchQuery}
+                    onChange={(event) => setCourtSearchQuery(event.target.value)}
+                    placeholder="Search courts or cities..."
+                    className="pl-9"
+                  />
+                </div>
+                <Tabs value={courtsView} onValueChange={setCourtsView} className="w-full sm:w-auto">
+                  <TabsList className="grid grid-cols-2 gap-1 bg-slate-100 rounded-lg p-1">
+                    <TabsTrigger value="grid" className="flex items-center gap-2 data-[state=active]:bg-white">
+                      <Grid className="w-4 h-4" />
+                      Grid
+                    </TabsTrigger>
+                    <TabsTrigger value="map" className="flex items-center gap-2 data-[state=active]:bg-white">
+                      <Map className="w-4 h-4" />
+                      Map
+                    </TabsTrigger>
+                  </TabsList>
+                </Tabs>
+              </div>
+            </div>
+
+            {courtsView === "grid" ? (
+              <CourtFinder courts={filteredCourts} />
+            ) : filteredCourts.length > 0 ? (
+              <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+                <CourtsMap courts={filteredCourts} />
+              </div>
+            ) : (
+              <div className="text-center py-16">
+                <div className="w-24 h-24 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <MapPin className="w-12 h-12 text-slate-400" />
+                </div>
+                <h3 className="text-xl font-semibold text-slate-900 mb-2">No courts found</h3>
+                <p className="text-slate-600 max-w-sm mx-auto">
+                  Try a different search or check back soon for new venues in your area.
+                </p>
+              </div>
+            )}
           </TabsContent>
 
           {/* Leaderboard Tab */}
