@@ -27,6 +27,32 @@ const navigation = [
 const features = [
   {
     name: 'Elite coach marketplace',
+    description: 'Verify credentials, review specialties, and book private training with coaches who know how to sculpt your next breakthrough.',
+    icon: SparklesIcon,
+  },
+  {
+    name: 'Versus matchup engine',
+    description: 'Join curated pickup games, rival ladders, and weekend tournaments tailored to your sport, skill tier, and competitive drive.',
+    icon: TrophyIcon,
+  },
+  {
+    name: 'Progress intelligence',
+    description: 'Layer coach feedback with Versus stats to see how every drill translates to real-game results and rankings.',
+    icon: ChartBarIcon,
+  },
+  {
+    name: 'Local crew finder',
+    description: 'Build training pods or competition squads, sync calendars, and keep everyone locked in with shared prep checklists.',
+    icon: UserGroupIcon,
+  },
+  {
+    name: 'Unified training & battle calendar',
+    description: 'Stack lessons beside match nights with reminders, facility details, and arrival windows so nothing slips between the gaps.',
+    icon: CalendarDaysIcon,
+  },
+  {
+    name: 'Geo-targeted arenas',
+    description: 'Discover premium gyms, community courts, and pop-up fields near you for last-minute sessions or high-stakes Versus showdowns.',
     description:
       'Verify credentials, review specialties, and book private training with coaches who know how to sculpt your next breakthrough.',
     icon: SparklesIcon,
@@ -114,6 +140,15 @@ const features = [
 const steps = [
   {
     title: 'Craft your training and competition DNA',
+    description: 'Pick your sport, goals, coaching style, and Versus intensity to unlock a tailored feed of experts and opponents.',
+  },
+  {
+    title: 'Match with coaches and challengers',
+    description: 'FitFinder pairs you with certified coaches, sparring partners, and ready-to-run Versus events that fit your calendar.',
+  },
+  {
+    title: 'Run the playbook end-to-end',
+    description: 'Book sessions, RSVP to matchups, analyze results, and keep momentum rolling inside one integrated control center.',
     description:
       'Pick your sport, goals, coaching style, and Versus intensity to unlock a tailored feed of experts and opponents.',
   },
@@ -122,7 +157,26 @@ const steps = [
     description:
       'FitFinder pairs you with certified coaches, sparring partners, and ready-to-run Versus events that fit your calendar.',
   },
+]
+
+const testimonials = [
   {
+    quote: 'We signed three private hitting coaches and filled our Versus cage nights in one week. FitFinder keeps our players sharpening skills by day and battling new rivals by night.',
+    name: 'Lena Ortiz',
+    role: 'Program Director, Metro Sluggers Academy',
+  },
+  {
+    quote: 'The roster goes from film review to Versus scrimmages without switching apps. Coaches trust the calendar, athletes crave the competition, and buy-in has never been stronger.',
+    name: 'Malik Chen',
+    role: 'Head Performance Coach, Elevate Hoops Lab',
+  },
+  {
+    quote: 'Versus ladders feed directly into our coaching plans, so every rep is tied to a scoreboard. FitFinder finally treats competition as a core feature, not an optional tab.',
+    name: 'Jordan Blake',
+    role: 'Owner, Apex Fight Collective',
+  },
+]
+
     title: 'Run the playbook end-to-end',
     description:
       'Book sessions, RSVP to matchups, analyze results, and keep momentum rolling inside one integrated control center.',
@@ -480,6 +534,42 @@ export default function Landing() {
                         <span className="rounded-full bg-emerald-400/20 px-3 py-1 text-xs font-semibold text-emerald-300">Cleared</span>
                       </div>
                       <p className="mt-3 text-xs text-white/60">6 x :20 drive sprints | 1:40 recovery with sled pulls.</p>
+                    </div>
+                    <div className="rounded-2xl border border-white/5 bg-white/10 p-4">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-sm font-semibold text-slate-950">Film + matchup prep</p>
+                          <p className="text-xs text-slate-900/70">Coach Rivera • Remote</p>
+                        </div>
+                        <span className="rounded-full bg-slate-900 px-3 py-1 text-xs font-semibold text-white">02:15 PM</span>
+                      </div>
+                      <p className="mt-3 text-xs text-slate-900/80">Scouting notes for tonight’s Versus quarterfinal uploaded.</p>
+                    </div>
+                    <div className="rounded-2xl border border-white/10 bg-slate-950/60 p-4">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-sm font-semibold">Recovery cadence</p>
+                          <p className="text-xs text-white/50">Whoop · Integrated</p>
+                        </div>
+                        <span className="rounded-full bg-blue-500/20 px-3 py-1 text-xs font-semibold text-blue-200">+14%</span>
+                      </div>
+                      <p className="mt-3 text-xs text-white/60">HRV rising after yesterday’s Versus semifinal cooldown.</p>
+                    </div>
+                  </div>
+                  <div className="mt-6 rounded-2xl border border-white/10 bg-slate-950/60 p-4">
+                    <p className="text-xs uppercase tracking-[0.3em] text-white/40">Versus lineup</p>
+                    <div className="mt-3 flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-semibold">Citywide gauntlet</p>
+                        <p className="text-xs text-white/50">You vs. Kingsmen Crew · Skyline Arena</p>
+                      </div>
+                      <span className="rounded-full bg-gradient-to-r from-emerald-400 via-teal-400 to-blue-500 px-3 py-1 text-xs font-semibold text-slate-900">
+                        3 hrs · RSVP
+                      </span>
+                    </div>
+                    <p className="mt-3 text-xs text-white/60">Win and jump two spots on the Versus leaderboard.</p>
+                      </div>
+                      <p className="mt-3 text-xs text-white/60">6 x :20 drive sprints | 1:40 recovery with sled pulls.</p>
                           <p className="text-sm font-semibold">Tempo intervals</p>
                           <p className="text-xs text-white/50">Coach Naomi • Track</p>
                         </div>
@@ -622,6 +712,8 @@ export default function Landing() {
             <div className="max-w-2xl">
               <p className="text-sm font-semibold uppercase tracking-[0.3em] text-emerald-400">How it works</p>
               <h2 className="mt-4 text-3xl font-semibold tracking-tight text-white sm:text-4xl">From personal bests to Versus wins</h2>
+              <p className="mt-4 text-base text-white/60">
+                FitFinder blends coaching precision with match-ready energy so you can prepare smarter, compete harder, and celebrate every level-up without juggling multiple platforms.
               <p className="mt-4 text-base text-white/60">
                 FitFinder blends coaching precision with match-ready energy so you can prepare smarter, compete harder, and celebrate every level-up without juggling multiple platforms.
               <h2 className="mt-4 text-3xl font-semibold tracking-tight text-white sm:text-4xl">From first session to fiercest rivalry</h2>
@@ -791,6 +883,8 @@ export default function Landing() {
           <div className="mx-auto max-w-5xl rounded-4xl bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900 px-6 py-20 text-center text-white shadow-[0_50px_120px_-60px_rgba(16,185,129,0.35)] sm:px-10">
             <p className="text-sm font-semibold uppercase tracking-[0.3em] text-emerald-400">Join the dual-threat era</p>
             <h2 className="mt-5 text-3xl font-semibold tracking-tight sm:text-4xl">Recruit coaches, claim matchups, own every arena</h2>
+            <p className="mt-4 text-base text-white/60 sm:mx-auto sm:max-w-2xl">
+              FitFinder powers premium coaching, local matchups, pickup games, and full-season planning—so you can engineer progress, chase trophies, and celebrate every rivalry in one place.
             <p className="mt-4 text-base text-white/60 sm:mx-auto sm:max-w-2xl">
               FitFinder powers premium coaching, local matchups, pickup games, and full-season planning—so you can engineer progress, chase trophies, and celebrate every rivalry in one place.
             <h2 className="mt-5 text-3xl font-semibold tracking-tight sm:text-4xl">Recruit coaches, rally rivals, own every arena</h2>
