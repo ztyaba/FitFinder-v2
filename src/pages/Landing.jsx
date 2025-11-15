@@ -47,6 +47,21 @@ const features = [
     name: 'Unified training & battle calendar',
     description:
       'Stack private sessions beside Versus events with automatic reminders so preparation and game day stay aligned.',
+    name: 'Precision matching',
+    description:
+      'AI-backed profiles surface the coach who fits your goals, sport, and training cadence in seconds.',
+    icon: SparklesIcon,
+  },
+  {
+    name: 'Intelligent insights',
+    description:
+      'Unified progress tracking highlights readiness, fatigue, and trends so every decision is evidence-based.',
+    icon: ChartBarIcon,
+  },
+  {
+    name: 'Connected scheduling',
+    description:
+      'Sync sessions to Google, Apple, and wearable calendars with adaptive reminders that keep you on pace.',
     icon: CalendarDaysIcon,
   },
   {
@@ -97,6 +112,27 @@ const testimonials = [
   {
     quote:
       'Versus ladders plugged into our training plans show exactly how private sessions translate on the court. FitFinder made competition our best data source.',
+    name: 'Mira Chen',
+    role: 'Performance Lead, Summit Endurance',
+  },
+]
+
+const testimonials = [
+  {
+    quote:
+      'FitFinder centralizes our performance data and daily workflows so every athlete knows exactly what to execute. The clarity has transformed our season prep.',
+    name: 'Naomi Sanders',
+    role: 'Head Coach, Velocity Track Club',
+  },
+  {
+    quote:
+      'From weekly programming to Versus matchups, we finally have one place to manage accountability and see progress trends without switching tools.',
+    name: 'Rafael Ortega',
+    role: 'Director of Performance, Elevate FC',
+  },
+  {
+    quote:
+      'Our remote athletes stay on pace because FitFinder syncs calendars, readiness scores, and coach feedback in real time. It feels like a command center.',
     name: 'Mira Chen',
     role: 'Performance Lead, Summit Endurance',
   },
@@ -176,6 +212,19 @@ export default function Landing() {
 
     return (
       <a href={href} className={baseClasses}>
+  const PrimaryButton = ({ href, children, isRoute }) =>
+    isRoute ? (
+      <Link
+        to={href}
+        className="inline-flex items-center justify-center rounded-full bg-emerald-400 px-6 py-3 text-sm font-semibold text-slate-950 shadow-[0_20px_40px_-24px_rgba(16,185,129,0.8)] transition hover:-translate-y-0.5 hover:bg-emerald-300"
+      >
+        {children}
+      </Link>
+    ) : (
+      <a
+        href={href}
+        className="inline-flex items-center justify-center rounded-full bg-emerald-400 px-6 py-3 text-sm font-semibold text-slate-950 shadow-[0_20px_40px_-24px_rgba(16,185,129,0.8)] transition hover:-translate-y-0.5 hover:bg-emerald-300"
+      >
         {children}
       </a>
     )
@@ -269,6 +318,7 @@ export default function Landing() {
                 className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold uppercase tracking-[0.3em] text-white/70"
               >
                 <span>Train + compete together</span>
+                <span>Fitness intelligence</span>
               </motion.div>
               <motion.h1
                 initial={{ opacity: 0, y: 36 }}
@@ -277,6 +327,7 @@ export default function Landing() {
                 className="mt-6 text-4xl font-semibold tracking-tight sm:text-5xl lg:text-6xl"
               >
                 Train smarter. Compete harder.
+                The coaching command center built for unstoppable athletes
               </motion.h1>
               <motion.p
                 initial={{ opacity: 0, y: 40 }}
@@ -285,12 +336,14 @@ export default function Landing() {
                 className="mt-6 text-lg text-white/70 sm:max-w-xl"
               >
                 FitFinder is the all-in-one hub to discover elite coaches, secure local competitors, and move from private training to headline Versus battles without changing tabs.
+                FitFinder syncs elite coaching, adaptive programs, and live accountability into one premium platform so every rep builds momentum.
               </motion.p>
               <motion.div
                 initial={{ opacity: 0, y: 40 }}
                 animate={heroInView ? { opacity: 1, y: 0 } : {}}
                 transition={{ delay: 0.5, duration: 0.75, ease: 'easeOut' }}
                 className="mt-10 flex flex-col gap-4 sm:flex-row sm:items-center"
+                className="mt-10 flex flex-col gap-4 sm:flex-row"
               >
                 <PrimaryButton href={createPageUrl('Browse')} isRoute>
                   Find coaches
@@ -334,6 +387,7 @@ export default function Landing() {
                   <div className="flex items-center justify-between text-xs text-white/60">
                     <span>Today</span>
                     <span>Training & Versus synced</span>
+                    <span>Sync status · Live</span>
                   </div>
                   <div className="mt-6 space-y-4">
                     <div className="rounded-2xl border border-white/10 bg-slate-950/60 p-4">
@@ -350,11 +404,13 @@ export default function Landing() {
                       <div className="flex items-center justify-between">
                         <div>
                           <p className="text-sm font-semibold text-slate-950">Film + feedback</p>
+                          <p className="text-sm font-semibold text-slate-950">Strength strategy</p>
                           <p className="text-xs text-slate-900/70">Coach Malik • Remote</p>
                         </div>
                         <span className="rounded-full bg-slate-900 px-3 py-1 text-xs font-semibold text-white">01:45 PM</span>
                       </div>
                       <p className="mt-3 text-xs text-slate-900/80">Video sync locked. Competitive scouting clips uploaded.</p>
+                      <p className="mt-3 text-xs text-slate-900/80">Video sync locked. Notes and testing plan updated.</p>
                     </div>
                     <div className="rounded-2xl border border-white/10 bg-slate-950/60 p-4">
                       <div className="flex items-center justify-between">
@@ -379,6 +435,16 @@ export default function Landing() {
                       </span>
                     </div>
                     <p className="mt-3 text-xs text-white/60">Winner moves up the Versus ladder · 8 challengers locked in.</p>
+                    <p className="text-xs uppercase tracking-[0.3em] text-white/40">Versus live</p>
+                    <div className="mt-3 flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-semibold">Sprint showdown</p>
+                        <p className="text-xs text-white/50">You · Coach Rivera squad</p>
+                      </div>
+                      <span className="rounded-full bg-gradient-to-r from-emerald-400 via-teal-400 to-blue-500 px-3 py-1 text-xs font-semibold text-slate-900">
+                        Leading
+                      </span>
+                    </div>
                   </div>
                 </motion.div>
               </motion.div>
@@ -398,6 +464,7 @@ export default function Landing() {
             <div className="mx-auto max-w-2xl text-center text-slate-900">
               <p className="text-sm font-semibold uppercase tracking-[0.3em] text-emerald-500">Platform pillars</p>
               <h2 className="mt-4 text-3xl font-semibold tracking-tight sm:text-4xl">One arena for training and competition</h2>
+              <h2 className="mt-4 text-3xl font-semibold tracking-tight sm:text-4xl">Every workflow, refined for performance</h2>
               <p className="mt-4 text-base text-slate-600">
                 From private instruction to Versus throwdowns, FitFinder orchestrates every step so you can sharpen skills, rally your crew, and defend your ranking in one seamless flow.
               </p>
@@ -485,6 +552,43 @@ export default function Landing() {
           <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
             <div className="max-w-3xl">
               <p className="text-sm font-semibold uppercase tracking-[0.3em] text-emerald-500">Testimonials</p>
+              <h2 className="mt-4 text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">Elite programs rely on FitFinder to stay ahead</h2>
+              <p className="mt-4 text-base text-slate-600">
+                Performance leaders across sports trust FitFinder to harmonize coaching, data, and accountability for every season.
+              </p>
+            </div>
+            <div className="mt-16 grid gap-10 lg:grid-cols-3">
+              {testimonials.map((testimonial, index) => (
+                <motion.div
+                  key={testimonial.name}
+                  custom={index}
+                  initial="hidden"
+                  animate={testimonialsInView ? 'visible' : 'hidden'}
+                  variants={testimonialVariants}
+                  className="flex h-full flex-col rounded-3xl border border-slate-200 bg-gradient-to-b from-white via-white to-slate-50 p-8 shadow-[0_35px_60px_-50px_rgba(15,23,42,0.35)]"
+                >
+                  <p className="text-base text-slate-700">“{testimonial.quote}”</p>
+                  <div className="mt-8">
+                    <p className="text-sm font-semibold text-slate-900">{testimonial.name}</p>
+                    <p className="text-xs uppercase tracking-[0.25em] text-slate-500">{testimonial.role}</p>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </motion.section>
+
+        <motion.section
+          id="testimonials"
+          ref={testimonialsRef}
+          initial="hidden"
+          animate={testimonialsInView ? 'visible' : 'hidden'}
+          variants={{ hidden: { opacity: 0, y: 60 }, visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: 'easeOut' } } }}
+          className="bg-white py-24 sm:py-28"
+        >
+          <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+            <div className="max-w-3xl">
+              <p className="text-sm font-semibold uppercase tracking-[0.3em] text-emerald-500">Testimonials</p>
               <h2 className="mt-4 text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">Built for coaches, competitors, and every hybrid athlete</h2>
               <p className="mt-4 text-base text-slate-600">
                 Teams and solo grinders alike trust FitFinder to balance elite instruction with Versus energy so progress and bragging rights grow together.
@@ -521,6 +625,8 @@ export default function Landing() {
           <div className="mx-auto max-w-5xl rounded-4xl bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900 px-6 py-20 text-center text-white shadow-[0_50px_120px_-60px_rgba(16,185,129,0.35)] sm:px-10">
             <p className="text-sm font-semibold uppercase tracking-[0.3em] text-emerald-400">Join the dual-threat era</p>
             <h2 className="mt-5 text-3xl font-semibold tracking-tight sm:text-4xl">Recruit coaches, rally rivals, own every arena</h2>
+            <p className="text-sm font-semibold uppercase tracking-[0.3em] text-emerald-400">Ready to move</p>
+            <h2 className="mt-5 text-3xl font-semibold tracking-tight sm:text-4xl">Bring your performance operations into one intelligent hub</h2>
             <p className="mt-4 text-base text-white/60 sm:mx-auto sm:max-w-2xl">
               FitFinder powers your entire grind—from booking private instruction to locking pickup games, Versus challenges, and season calendars—so training and competition fuel each other every day.
             </p>
