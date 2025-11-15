@@ -1,379 +1,356 @@
-import { useState, useRef } from "react";
-import { useNavigate } from "react-router-dom";
-import { Dialog, DialogPanel } from "@headlessui/react";
+import React, { useState, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Dialog, DialogPanel } from '@headlessui/react';
 import {
   Bars3Icon,
   XMarkIcon,
+  ArrowRightIcon,
+  RocketLaunchIcon,
+  ChartBarSquareIcon,
   UserGroupIcon,
-  ChartBarIcon,
-  BoltIcon,
-  UsersIcon,
   TrophyIcon,
   CalendarDaysIcon,
-  SparklesIcon,
-} from "@heroicons/react/24/outline";
-import { CheckCircleIcon, ArrowRightIcon } from "@heroicons/react/20/solid";
-import { motion, useInView } from "framer-motion";
-import { createPageUrl } from "@/utils";
+  SignalIcon,
+  BoltIcon
+} from '@heroicons/react/24/outline';
+import { CheckCircleIcon } from '@heroicons/react/20/solid';
+import { motion, useInView } from 'framer-motion';
+import { createPageUrl } from '@/utils';
 
 const ease = [0.16, 1, 0.3, 1];
 
 const features = [
   {
-    title: "Personalized coach matching",
-    description:
-      "Share your goals and FitFinder pairs you with specialists for strength, skill, and recovery programs tailored to your schedule.",
-    icon: UserGroupIcon,
+    name: 'Personalized coach matching',
+    description: 'Get paired with specialists who understand your sport, goals, and schedule for high-impact guidance.',
+    icon: UserGroupIcon
   },
   {
-    title: "Adaptive training plans",
-    description:
-      "Flexible programming evolves with every session so you always know the next drill, lift, or recovery block.",
-    icon: BoltIcon,
+    name: 'Adaptive training plans',
+    description: 'Dynamic programming that evolves with your performance, recovery metrics, and upcoming competitions.',
+    icon: BoltIcon
   },
   {
-    title: "Live performance insights",
-    description:
-      "Track progress across workouts, scrimmages, and conditioning to keep your growth visible and accountable.",
-    icon: ChartBarIcon,
+    name: 'Live performance insights',
+    description: 'Track velocity, stamina, and skill drills in real time to stay accountable between every session.',
+    icon: SignalIcon
   },
   {
-    title: "Local matchups",
-    description:
-      "Discover nearby athletes looking for the same intensity level and schedule games that fit your week.",
-    icon: UsersIcon,
+    name: 'Integrated scheduling',
+    description: 'Book workouts, sync calendars, and receive automated reminders that keep your training cadence locked in.',
+    icon: CalendarDaysIcon
   },
   {
-    title: "Pickup games",
-    description:
-      "Drop into community-run sessions or create your own, complete with roster invites and chat.",
-    icon: SparklesIcon,
+    name: 'Local matchups',
+    description: 'Discover nearby athletes ready to run scrimmages, sparring rounds, or competitive drills on demand.',
+    icon: RocketLaunchIcon
   },
   {
-    title: "Versus challenges",
-    description:
-      "Compete in skill ladders, time trials, and head-to-head Versus events with rankings that refresh in real time.",
-    icon: TrophyIcon,
+    name: 'Pickup games',
+    description: 'Drop into weekly pickup runs and small-sided games curated around your position, skill level, and availability.',
+    icon: ArrowRightIcon
   },
   {
-    title: "Leaderboards and stat tracking",
-    description:
-      "Compare your metrics with friends and rivals, and spotlight standout performances across divisions.",
-    icon: ChartBarIcon,
+    name: 'Versus challenges',
+    description: 'Join leaderboard-driven challenges that fuel rivalries, track streaks, and keep you sharp all season.',
+    icon: TrophyIcon
   },
   {
-    title: "Integrated scheduling",
-    description:
-      "Sync coaching sessions, matchups, and recovery windows with reminders so nothing slips through the cracks.",
-    icon: CalendarDaysIcon,
-  },
+    name: 'Leaderboards & stat cards',
+    description: 'Showcase your rankings, matchup history, and verified stats to measure progress against peers.',
+    icon: ChartBarSquareIcon
+  }
 ];
 
-const coachingHighlights = [
-  "Elite coaches vetted for specialties in strength, agility, and game IQ.",
-  "Structured programs that adapt from preseason to playoffs.",
-  "Consistent check-ins that keep you accountable and progressing fast.",
-];
-
-const competitionHighlights = [
-  "Matchups filtered by sport, skill level, and proximity.",
-  "Pickup games and Versus events that keep your competitive edge sharp.",
-  "Leaderboards, stats, and recaps that fuel the next challenge.",
-];
-
-const steps = [
+const howItWorksSteps = [
   {
-    title: "Tell us how you train and play",
-    description:
-      "Set your sport, goals, schedule, and competitive intensity so FitFinder understands your journey.",
+    title: 'Tell us how you train and play',
+    description: 'Share the sports you love, your training style, competitive goals, and availability so FitFinder can calibrate the experience.'
   },
   {
-    title: "Get matched with coaches and competitors",
-    description:
-      "Receive curated recommendations for trainers, programs, local rivals, and pickup games in one feed.",
+    title: 'Get matched with coaches and competitors',
+    description: 'Our engine pairs you with elite coaches plus local athletes who match your intensity for drills, scrimmages, and versus events.'
   },
   {
-    title: "Book sessions, join matchups, track progress",
-    description:
-      "Secure time with your coach, lock in Versus events, and capture stats that showcase improvement.",
-  },
+    title: 'Book sessions, join matchups, track progress',
+    description: 'Schedule lessons, RSVP to pickup games, and monitor improvements as your training and competition calendar stays in sync.'
+  }
 ];
 
 const testimonials = [
   {
-    quote:
-      "Coach Ren built a strength cycle that finally translated to game speed. The weekly adjustments kept me peaking through playoffs.",
-    name: "Jordan Alvarez",
-    handle: "@jordantrains",
-    role: "Wing, semi-pro basketball",
+    quote: 'My FitFinder coach dialed in my conditioning, and the weekly check-ins kept my progress on track for tournament season.',
+    name: 'Jordan Ellis',
+    handle: '@jordantheguard',
+    avatar: 'https://images.unsplash.com/photo-1544723795-3fb6469f5b39?auto=format&fit=facearea&w=96&h=96&q=80',
+    focus: 'Coaching'
   },
   {
-    quote:
-      "Versus alerts help my crew lock in competitive runs every weekend. Leaderboards keep us chasing the next win.",
-    name: "Maya Chen",
-    handle: "@mayagoesversus",
-    role: "Forward, community league",
-  },
+    quote: 'Versus matchups turned my training into friendly rivalries—now I have a squad pushing me every week and a leaderboard to prove it.',
+    name: 'Kayla Ruiz',
+    handle: '@kaylaruns',
+    avatar: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=facearea&w=96&h=96&q=80',
+    focus: 'Versus'
+  }
 ];
 
-const sectionVariants = {
+const fadeIn = {
   hidden: { opacity: 0, y: 32 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.7, ease },
-  },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease } }
 };
 
-const cardVariants = {
-  hidden: { opacity: 0, y: 24 },
+const staggerContainer = {
+  hidden: {},
   visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.6, ease },
-  },
+    transition: {
+      staggerChildren: 0.12,
+      delayChildren: 0.1
+    }
+  }
 };
+
+const floatingTransition = {
+  duration: 6,
+  repeat: Infinity,
+  repeatType: 'loop',
+  ease: 'easeInOut'
+};
+
+function useReveal() {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: '-100px' });
+  return [ref, isInView];
+}
 
 export default function Landing() {
-  const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const navigate = useNavigate();
 
-  const featuresRef = useRef(null);
-  const splitRef = useRef(null);
-  const howItWorksRef = useRef(null);
-  const testimonialsRef = useRef(null);
-  const finalCtaRef = useRef(null);
+  const [featuresRef, featuresInView] = useReveal();
+  const [splitRef, splitInView] = useReveal();
+  const [workflowRef, workflowInView] = useReveal();
+  const [testimonialsRef, testimonialsInView] = useReveal();
+  const [ctaRef, ctaInView] = useReveal();
 
-  const featuresInView = useInView(featuresRef, { once: true, amount: 0.2 });
-  const splitInView = useInView(splitRef, { once: true, amount: 0.2 });
-  const howItWorksInView = useInView(howItWorksRef, { once: true, amount: 0.2 });
-  const testimonialsInView = useInView(testimonialsRef, { once: true, amount: 0.2 });
-  const finalCtaInView = useInView(finalCtaRef, { once: true, amount: 0.2 });
+  const handleNavigate = (url) => {
+    navigate(url);
+  };
 
-  const navItems = [
-    {
-      label: "Browse Coaches",
-      action: () => navigate(createPageUrl("Browse")),
-    },
-    {
-      label: "Find Matchups",
-      action: () => navigate(createPageUrl("Versus")),
-    },
-    {
-      label: "How it works",
-      action: () => handleSmoothScroll("#how-it-works"),
-    },
-    {
-      label: "Success stories",
-      action: () => handleSmoothScroll("#testimonials"),
-    },
-  ];
-
-  function handleSmoothScroll(selector) {
-    const target = document.querySelector(selector);
+  const handleSmoothScroll = (event) => {
+    event.preventDefault();
+    const hash = event.currentTarget.getAttribute('href').replace('#', '');
+    const target = document.getElementById(hash);
     if (target) {
-      const y = target.getBoundingClientRect().top + window.scrollY - 80;
-      window.scrollTo({ top: y, behavior: "smooth" });
+      const offset = 96;
+      const top = target.getBoundingClientRect().top + window.scrollY - offset;
+      window.scrollTo({ top, behavior: 'smooth' });
     }
     setMobileMenuOpen(false);
-  }
+  };
+
+  const heroVariants = {
+    hidden: { opacity: 0, y: 40 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease } }
+  };
+
+  const heroButtonVariants = {
+    hidden: { opacity: 0, y: 28 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease, delay: 0.15 } }
+  };
+
+  const heroPhoneVariants = {
+    hidden: { opacity: 0, scale: 0.9, y: 40 },
+    visible: {
+      opacity: 1,
+      scale: 1,
+      y: 0,
+      transition: { duration: 0.8, ease, delay: 0.2 }
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white">
-      <header className="sticky top-0 z-40 backdrop-blur border-b border-white/5 bg-slate-950/70">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-          <button
-            type="button"
-            onClick={() => navigate(createPageUrl("Browse"))}
-            className="flex items-center gap-3"
-          >
-            <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-emerald-400 to-blue-500 text-lg font-semibold text-slate-950">
-              FF
-            </span>
+    <div className="bg-slate-950 text-white">
+      <header className="sticky top-0 z-40 border-b border-white/5 bg-slate-950/80 backdrop-blur">
+        <nav className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4 lg:px-8" aria-label="Global">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 to-blue-500">
+              <span className="text-lg font-semibold text-white">FF</span>
+            </div>
             <span className="text-lg font-semibold tracking-tight">FitFinder</span>
-          </button>
-          <nav className="hidden items-center gap-10 text-sm font-medium md:flex">
-            {navItems.map((item) => (
-              <button
-                key={item.label}
-                type="button"
-                onClick={item.action}
-                className="text-white/80 transition hover:text-white"
-              >
-                {item.label}
-              </button>
-            ))}
-          </nav>
-          <div className="hidden md:flex">
+          </div>
+          <div className="flex lg:hidden">
             <button
               type="button"
-              onClick={() => navigate(createPageUrl("Browse"))}
-              className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-emerald-400 to-blue-500 px-5 py-2 text-sm font-semibold text-slate-950 shadow-lg shadow-emerald-500/30 transition hover:from-emerald-300 hover:to-blue-400"
+              className="inline-flex items-center justify-center rounded-md p-2 text-white hover:bg-white/10 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400"
+              onClick={() => setMobileMenuOpen(true)}
+            >
+              <span className="sr-only">Open main menu</span>
+              <Bars3Icon className="h-6 w-6" aria-hidden="true" />
+            </button>
+          </div>
+          <div className="hidden items-center gap-8 lg:flex">
+            <a href="/browse" onClick={(e) => { e.preventDefault(); handleNavigate(createPageUrl('Browse')); }} className="text-sm font-medium text-white/80 transition hover:text-white">
+              Browse Coaches
+            </a>
+            <a href="/versus" onClick={(e) => { e.preventDefault(); handleNavigate(createPageUrl('Versus')); }} className="text-sm font-medium text-white/80 transition hover:text-white">
+              Find Matchups
+            </a>
+            <a href="#how-it-works" onClick={handleSmoothScroll} className="text-sm font-medium text-white/80 transition hover:text-white">
+              How it works
+            </a>
+            <a href="#testimonials" onClick={handleSmoothScroll} className="text-sm font-medium text-white/80 transition hover:text-white">
+              Success stories
+            </a>
+          </div>
+          <div className="hidden lg:flex">
+            <button
+              onClick={() => handleNavigate(createPageUrl('Browse'))}
+              className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-2 text-sm font-semibold text-slate-950 shadow-sm transition hover:bg-emerald-100"
             >
               Launch app
-              <ArrowRightIcon className="h-4 w-4" />
+              <ArrowRightIcon className="h-4 w-4" aria-hidden="true" />
             </button>
           </div>
-          <div className="md:hidden">
-            <button
-              type="button"
-              onClick={() => setMobileMenuOpen(true)}
-              className="inline-flex items-center rounded-md border border-white/10 p-2 text-white"
-            >
-              <Bars3Icon className="h-6 w-6" />
-            </button>
-          </div>
-        </div>
-        <Dialog open={mobileMenuOpen} onClose={setMobileMenuOpen} className="md:hidden">
-          <div className="fixed inset-0 bg-slate-950/80 backdrop-blur" />
-          <DialogPanel className="fixed inset-y-0 right-0 z-50 w-full max-w-sm overflow-y-auto bg-slate-900 px-6 py-6">
+        </nav>
+        <Dialog as="div" open={mobileMenuOpen} onClose={setMobileMenuOpen} className="lg:hidden">
+          <div className="fixed inset-0 z-40" />
+          <DialogPanel className="fixed inset-y-0 right-0 z-50 w-full max-w-sm overflow-y-auto bg-slate-950 px-6 py-6 shadow-xl ring-1 ring-white/10">
             <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 to-blue-500">
+                  <span className="text-lg font-semibold text-white">FF</span>
+                </div>
+                <span className="text-lg font-semibold tracking-tight">FitFinder</span>
+              </div>
               <button
                 type="button"
-                onClick={() => navigate(createPageUrl("Browse"))}
-                className="flex items-center gap-2"
-              >
-                <span className="flex h-9 w-9 items-center justify-center rounded-md bg-gradient-to-br from-emerald-400 to-blue-500 text-sm font-semibold text-slate-950">
-                  FF
-                </span>
-                <span className="text-base font-semibold">FitFinder</span>
-              </button>
-              <button
-                type="button"
+                className="rounded-md p-2 text-white hover:bg-white/10"
                 onClick={() => setMobileMenuOpen(false)}
-                className="rounded-md border border-white/10 p-2 text-white"
               >
-                <XMarkIcon className="h-6 w-6" />
+                <span className="sr-only">Close menu</span>
+                <XMarkIcon className="h-6 w-6" aria-hidden="true" />
               </button>
             </div>
-            <div className="mt-8 space-y-3">
-              {navItems.map((item) => (
-                <button
-                  key={item.label}
-                  type="button"
-                  onClick={() => {
-                    item.action();
-                    setMobileMenuOpen(false);
-                  }}
-                  className="block w-full rounded-lg border border-white/10 px-4 py-3 text-left text-sm font-medium text-white/90 transition hover:bg-white/5"
-                >
-                  {item.label}
-                </button>
-              ))}
-              <button
-                type="button"
-                onClick={() => {
-                  navigate(createPageUrl("Browse"));
-                  setMobileMenuOpen(false);
-                }}
-                className="flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-emerald-400 to-blue-500 px-4 py-3 text-sm font-semibold text-slate-950"
-              >
-                Launch app
-                <ArrowRightIcon className="h-4 w-4" />
-              </button>
+            <div className="mt-8 flow-root">
+              <div className="-my-6 divide-y divide-white/10">
+                <div className="space-y-4 py-6">
+                  <button
+                    onClick={() => { setMobileMenuOpen(false); handleNavigate(createPageUrl('Browse')); }}
+                    className="block w-full text-left text-base font-medium text-white/80 transition hover:text-white"
+                  >
+                    Browse Coaches
+                  </button>
+                  <button
+                    onClick={() => { setMobileMenuOpen(false); handleNavigate(createPageUrl('Versus')); }}
+                    className="block w-full text-left text-base font-medium text-white/80 transition hover:text-white"
+                  >
+                    Find Matchups
+                  </button>
+                  <a href="#how-it-works" onClick={handleSmoothScroll} className="block text-base font-medium text-white/80 transition hover:text-white">
+                    How it works
+                  </a>
+                  <a href="#testimonials" onClick={handleSmoothScroll} className="block text-base font-medium text-white/80 transition hover:text-white">
+                    Success stories
+                  </a>
+                </div>
+                <div className="py-6">
+                  <button
+                    onClick={() => { setMobileMenuOpen(false); handleNavigate(createPageUrl('Browse')); }}
+                    className="flex w-full items-center justify-center gap-2 rounded-full bg-white px-5 py-3 text-sm font-semibold text-slate-950 shadow-sm transition hover:bg-emerald-100"
+                  >
+                    Launch app
+                    <ArrowRightIcon className="h-4 w-4" aria-hidden="true" />
+                  </button>
+                </div>
+              </div>
             </div>
           </DialogPanel>
         </Dialog>
       </header>
 
       <main>
-        <section className="relative overflow-hidden">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(45,255,196,0.12),transparent_55%)]" />
-          <div className="absolute inset-0 bg-[linear-gradient(130deg,#020617,rgba(15,23,42,0.75))]" />
-          <div className="relative mx-auto flex max-w-6xl flex-col gap-16 px-6 py-24 lg:flex-row lg:items-center">
-            <div className="w-full lg:w-1/2">
+        <section className="relative isolate overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900" />
+          <div className="absolute inset-x-0 -top-32 -z-10 opacity-40 blur-3xl">
+            <div className="mx-auto h-72 w-72 rotate-45 rounded-full bg-gradient-to-br from-emerald-500/60 via-blue-500/40 to-transparent" />
+          </div>
+          <div className="relative mx-auto flex max-w-6xl flex-col gap-16 px-6 pb-24 pt-24 lg:flex-row lg:items-center lg:gap-20 lg:px-8 lg:pb-32 lg:pt-32">
+            <div className="max-w-xl">
               <motion.h1
-                initial={{ opacity: 0, y: 32 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, ease }}
-                className="text-4xl font-semibold tracking-tight text-white sm:text-5xl"
+                variants={heroVariants}
+                initial="hidden"
+                animate="visible"
+                className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl"
               >
                 Train smarter. Compete harder.
               </motion.h1>
               <motion.p
-                initial={{ opacity: 0, y: 32 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, ease, delay: 0.15 }}
-                className="mt-6 max-w-xl text-lg text-white/70"
+                variants={heroVariants}
+                initial="hidden"
+                animate="visible"
+                transition={{ duration: 0.8, ease, delay: 0.1 }}
+                className="mt-6 text-lg text-white/70"
               >
-                FitFinder connects you with elite coaches to elevate every drill and finds local competitors for matchups that keep you improving faster.
+                FitFinder connects you with elite coaches for tailored training while lining up local competitors and matchups that keep you improving faster every week.
               </motion.p>
               <motion.div
-                initial={{ opacity: 0, y: 32 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, ease, delay: 0.3 }}
+                variants={heroButtonVariants}
+                initial="hidden"
+                animate="visible"
                 className="mt-8 flex flex-col gap-4 sm:flex-row"
               >
                 <button
-                  type="button"
-                  onClick={() => navigate(createPageUrl("Browse"))}
-                  className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-emerald-400 to-blue-500 px-6 py-3 text-base font-semibold text-slate-950 shadow-lg shadow-emerald-500/30 transition hover:from-emerald-300 hover:to-blue-400"
+                  onClick={() => handleNavigate(createPageUrl('Browse'))}
+                  className="inline-flex items-center justify-center rounded-full bg-emerald-500 px-6 py-3 text-sm font-semibold text-slate-950 shadow-lg shadow-emerald-500/40 transition hover:bg-emerald-400"
                 >
                   Find Coaches
                 </button>
                 <button
-                  type="button"
-                  onClick={() => navigate(createPageUrl("Versus"))}
-                  className="inline-flex items-center justify-center rounded-full border border-white/20 px-6 py-3 text-base font-semibold text-white transition hover:border-white/40 hover:bg-white/5"
+                  onClick={() => handleNavigate(createPageUrl('Versus'))}
+                  className="inline-flex items-center justify-center rounded-full border border-white/20 px-6 py-3 text-sm font-semibold text-white transition hover:border-emerald-400 hover:text-emerald-200"
                 >
                   Find Matchups
                 </button>
               </motion.div>
               <motion.div
-                initial={{ opacity: 0, y: 24 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, ease, delay: 0.45 }}
-                className="mt-12 grid gap-4 text-sm text-white/60 sm:grid-cols-2"
+                variants={heroButtonVariants}
+                initial="hidden"
+                animate="visible"
+                transition={{ delay: 0.25, duration: 0.8, ease }}
+                className="mt-10 flex items-center gap-3 text-sm text-white/50"
               >
-                <div className="flex items-start gap-3">
-                  <CheckCircleIcon className="mt-1 h-5 w-5 text-emerald-400" />
-                  <span>Strength, skill, and conditioning programs that stay in sync with your goals.</span>
-                </div>
-                <div className="flex items-start gap-3">
-                  <CheckCircleIcon className="mt-1 h-5 w-5 text-blue-400" />
-                  <span>Pickup games, Versus events, and stat tracking in one connected platform.</span>
-                </div>
+                <CheckCircleIcon className="h-5 w-5 text-emerald-400" aria-hidden="true" />
+                Calendar sync, stat tracking, and accountability built in.
               </motion.div>
             </div>
             <motion.div
-              initial={{ opacity: 0, y: 40 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.9, ease, delay: 0.4 }}
-              className="relative w-full max-w-md lg:w-1/2"
+              variants={heroPhoneVariants}
+              initial="hidden"
+              animate="visible"
+              className="relative mx-auto w-full max-w-sm"
             >
               <motion.div
-                animate={{ y: [0, -16, 0] }}
-                transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-                className="rounded-3xl border border-white/10 bg-gradient-to-b from-white/5 to-white/10 p-6 shadow-[0_40px_80px_-40px_rgba(6,182,212,0.4)]"
+                animate={{ y: [0, -12, 0] }}
+                transition={floatingTransition}
+                className="rounded-[2.5rem] border border-white/10 bg-gradient-to-b from-slate-900 to-slate-950 p-6 shadow-2xl"
               >
-                <div className="flex items-center justify-between text-xs text-white/60">
-                  <span>Today</span>
-                  <span>All Activities</span>
-                </div>
-                <div className="mt-6 space-y-4">
-                  <div className="rounded-2xl border border-white/15 bg-white/5 p-4 shadow-inner">
-                    <div className="flex items-center justify-between text-xs uppercase tracking-wide text-emerald-300/90">
-                      <span>Coached Session</span>
-                      <span>7:00 AM</span>
+                <div className="rounded-3xl border border-white/10 bg-slate-950/70 p-5 shadow-inner">
+                  <div className="space-y-4">
+                    <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                      <p className="text-xs uppercase tracking-wide text-emerald-300">Coached Session</p>
+                      <p className="mt-2 text-base font-semibold text-white">Strength reset with Coach Mira</p>
+                      <p className="mt-1 text-sm text-white/60">Tomorrow • 7:30 AM • Syncs to Calendar</p>
                     </div>
-                    <p className="mt-3 text-base font-semibold text-white">Power + Mobility with Coach Ren</p>
-                    <p className="mt-2 text-sm text-white/70">Strength lab • 60 min | Focus: explosive first step</p>
-                  </div>
-                  <div className="rounded-2xl border border-blue-500/20 bg-blue-500/10 p-4">
-                    <div className="flex items-center justify-between text-xs uppercase tracking-wide text-blue-300/90">
-                      <span>Versus Matchup</span>
-                      <span>5:30 PM</span>
+                    <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-4">
+                      <p className="text-xs uppercase tracking-wide text-emerald-300">Versus Matchup</p>
+                      <p className="mt-2 text-base font-semibold text-white">Pickup run at Lakeview Courts</p>
+                      <p className="mt-1 text-sm text-white/60">Saturday • 10 spots • Ranked</p>
                     </div>
-                    <p className="mt-3 text-base font-semibold text-white">FitFinder League Pickup</p>
-                    <p className="mt-2 text-sm text-white/70">Downtown Arena • RSVP 8/10 | Stats tracked live</p>
-                  </div>
-                  <div className="rounded-2xl border border-white/15 bg-white/5 p-4">
-                    <div className="flex items-center justify-between text-xs uppercase tracking-wide text-white/60">
-                      <span>New in your area</span>
-                      <span>Just now</span>
+                    <div className="rounded-2xl border border-blue-500/30 bg-blue-500/10 p-4">
+                      <p className="text-xs uppercase tracking-wide text-blue-300">New in your area</p>
+                      <p className="mt-2 text-base font-semibold text-white">3 new rivals matched to your profile</p>
+                      <p className="mt-1 text-sm text-white/60">Tap to challenge or invite to drills</p>
                     </div>
-                    <p className="mt-3 text-base font-semibold text-white">3 new rivals joined Versus near you</p>
-                    <p className="mt-2 text-sm text-white/70">Challenge them to a skills ladder or invite to your next game.</p>
                   </div>
                 </div>
               </motion.div>
@@ -383,261 +360,236 @@ export default function Landing() {
 
         <motion.section
           ref={featuresRef}
+          variants={staggerContainer}
           initial="hidden"
-          animate={featuresInView ? "visible" : "hidden"}
-          variants={sectionVariants}
-          className="bg-slate-950"
+          animate={featuresInView ? 'visible' : 'hidden'}
+          className="mx-auto max-w-6xl px-6 py-24 lg:px-8"
         >
-          <div className="mx-auto max-w-6xl px-6 py-24">
-            <div className="mx-auto max-w-2xl text-center">
-              <h2 className="text-3xl font-semibold text-white">Everything training and competing demands.</h2>
-              <p className="mt-4 text-base text-white/70">
-                FitFinder unifies coaching, sessions, matchups, and performance tools so athletes stay locked in from practice to game day.
-              </p>
-            </div>
-            <motion.div
-              initial="hidden"
-              animate={featuresInView ? "visible" : "hidden"}
-              variants={{
-                hidden: { opacity: 0 },
-                visible: {
-                  opacity: 1,
-                  transition: {
-                    staggerChildren: 0.08,
-                    delayChildren: 0.2,
-                  },
-                },
-              }}
-              className="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-4"
-            >
-              {features.map((feature) => (
-                <motion.div
-                  key={feature.title}
-                  variants={cardVariants}
-                  className="group flex h-full flex-col rounded-3xl border border-white/10 bg-white/5 p-6 transition duration-300 hover:-translate-y-2 hover:border-white/20 hover:shadow-xl hover:shadow-emerald-500/10"
-                >
-                  <feature.icon className="h-8 w-8 text-emerald-300" />
-                  <h3 className="mt-5 text-lg font-semibold text-white">{feature.title}</h3>
-                  <p className="mt-3 text-sm leading-6 text-white/70">{feature.description}</p>
-                </motion.div>
-              ))}
-            </motion.div>
-          </div>
+          <motion.div variants={fadeIn} className="mx-auto max-w-3xl text-center">
+            <h2 className="text-3xl font-semibold text-white sm:text-4xl">Power up every session and showdown</h2>
+            <p className="mt-4 text-base text-white/60">
+              FitFinder blends premium coaching infrastructure with competitive energy, giving you the tools to train with purpose and show up ready to win.
+            </p>
+          </motion.div>
+          <motion.div
+            variants={staggerContainer}
+            className="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-4"
+          >
+            {features.map((feature) => (
+              <motion.div
+                key={feature.name}
+                variants={fadeIn}
+                whileHover={{ y: -6, boxShadow: '0 24px 40px -24px rgba(16, 185, 129, 0.4)' }}
+                transition={{ duration: 0.5, ease }}
+                className="group flex h-full flex-col rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur"
+              >
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500/80 to-blue-500/80 text-white">
+                  <feature.icon className="h-6 w-6" aria-hidden="true" />
+                </div>
+                <h3 className="mt-5 text-lg font-semibold text-white">{feature.name}</h3>
+                <p className="mt-3 text-sm text-white/60">{feature.description}</p>
+              </motion.div>
+            ))}
+          </motion.div>
         </motion.section>
 
         <motion.section
           ref={splitRef}
-          id="training-vs-competing"
+          variants={fadeIn}
           initial="hidden"
-          animate={splitInView ? "visible" : "hidden"}
-          variants={sectionVariants}
-          className="bg-slate-900"
+          animate={splitInView ? 'visible' : 'hidden'}
+          className="border-t border-white/5 bg-slate-950/60"
         >
-          <div className="mx-auto grid max-w-6xl gap-12 px-6 py-24 lg:grid-cols-2 lg:gap-16">
+          <div className="mx-auto grid max-w-6xl gap-12 px-6 py-24 lg:grid-cols-2 lg:px-8">
             <motion.div
-              initial="hidden"
-              animate={splitInView ? "visible" : "hidden"}
-              variants={cardVariants}
-              className="rounded-3xl border border-white/10 bg-white/5 p-10"
+              variants={fadeIn}
+              transition={{ duration: 0.7, ease, delay: 0.1 }}
+              className="rounded-3xl border border-white/10 bg-white/5 p-8"
             >
-              <h3 className="text-2xl font-semibold text-white">Train with the right coaches</h3>
-              <p className="mt-4 text-base text-white/70">
-                Partner with experts who specialize in your sport, understand your schedule, and deliver programming that adapts week to week.
+              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-300">Training</p>
+              <h3 className="mt-4 text-2xl font-semibold text-white">Train with the right coaches</h3>
+              <p className="mt-3 text-sm text-white/60">
+                Work with specialists who deliver structured plans, data-driven insights, and accountability that keeps you progressing every week.
               </p>
               <ul className="mt-6 space-y-3 text-sm text-white/70">
-                {coachingHighlights.map((item) => (
-                  <li key={item} className="flex items-start gap-3">
-                    <CheckCircleIcon className="mt-1 h-5 w-5 text-emerald-400" />
-                    <span>{item}</span>
-                  </li>
-                ))}
+                <li className="flex items-start gap-3">
+                  <CheckCircleIcon className="mt-0.5 h-5 w-5 text-emerald-400" aria-hidden="true" />
+                  Position-specific skill development and strength cycles.
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircleIcon className="mt-0.5 h-5 w-5 text-emerald-400" aria-hidden="true" />
+                  Structured programming with video feedback and analytics.
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircleIcon className="mt-0.5 h-5 w-5 text-emerald-400" aria-hidden="true" />
+                  Weekly accountability check-ins synced to your calendar.
+                </li>
               </ul>
               <button
-                type="button"
-                onClick={() => navigate(createPageUrl("Browse"))}
+                onClick={() => handleNavigate(createPageUrl('Browse'))}
                 className="mt-8 inline-flex items-center gap-2 text-sm font-semibold text-emerald-300 transition hover:text-emerald-200"
               >
                 Browse Coaches
-                <ArrowRightIcon className="h-4 w-4" />
+                <ArrowRightIcon className="h-4 w-4" aria-hidden="true" />
               </button>
             </motion.div>
             <motion.div
-              initial="hidden"
-              animate={splitInView ? "visible" : "hidden"}
-              variants={cardVariants}
-              className="rounded-3xl border border-white/10 bg-white/5 p-10"
+              variants={fadeIn}
+              transition={{ duration: 0.7, ease, delay: 0.2 }}
+              className="rounded-3xl border border-white/10 bg-white/5 p-8"
             >
-              <h3 className="text-2xl font-semibold text-white">Compete with the right rivals</h3>
-              <p className="mt-4 text-base text-white/70">
-                FitFinder Versus keeps your calendar full with matchups that match your drive, whether you prefer friendly runs or ranked challenges.
+              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-blue-300">Competition</p>
+              <h3 className="mt-4 text-2xl font-semibold text-white">Compete with the right rivals</h3>
+              <p className="mt-3 text-sm text-white/60">
+                Fuel your edge with curated matchups, pickup games, and Versus events that pair you with athletes hungry for the same results.
               </p>
               <ul className="mt-6 space-y-3 text-sm text-white/70">
-                {competitionHighlights.map((item) => (
-                  <li key={item} className="flex items-start gap-3">
-                    <CheckCircleIcon className="mt-1 h-5 w-5 text-blue-400" />
-                    <span>{item}</span>
-                  </li>
-                ))}
+                <li className="flex items-start gap-3">
+                  <CheckCircleIcon className="mt-0.5 h-5 w-5 text-blue-400" aria-hidden="true" />
+                  Local matchups filtered by sport, role, and intensity level.
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircleIcon className="mt-0.5 h-5 w-5 text-blue-400" aria-hidden="true" />
+                  Ranked Versus events and pickup runs with live leaderboards.
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircleIcon className="mt-0.5 h-5 w-5 text-blue-400" aria-hidden="true" />
+                  Stat cards that capture highlights, wins, and streaks.
+                </li>
               </ul>
               <button
-                type="button"
-                onClick={() => navigate(createPageUrl("Versus"))}
+                onClick={() => handleNavigate(createPageUrl('Versus'))}
                 className="mt-8 inline-flex items-center gap-2 text-sm font-semibold text-blue-300 transition hover:text-blue-200"
               >
                 Find Matchups
-                <ArrowRightIcon className="h-4 w-4" />
+                <ArrowRightIcon className="h-4 w-4" aria-hidden="true" />
               </button>
             </motion.div>
           </div>
         </motion.section>
 
         <motion.section
-          ref={howItWorksRef}
           id="how-it-works"
+          ref={workflowRef}
+          variants={staggerContainer}
           initial="hidden"
-          animate={howItWorksInView ? "visible" : "hidden"}
-          variants={sectionVariants}
-          className="bg-slate-950"
+          animate={workflowInView ? 'visible' : 'hidden'}
+          className="mx-auto max-w-6xl px-6 py-24 lg:px-8"
         >
-          <div className="mx-auto max-w-6xl px-6 py-24">
-            <div className="mx-auto max-w-2xl text-center">
-              <h2 className="text-3xl font-semibold text-white">How FitFinder works</h2>
-              <p className="mt-4 text-base text-white/70">
-                One profile powers your training and competition, keeping your coach, matchups, and schedule on the same page.
-              </p>
-            </div>
-            <div className="mt-16 grid gap-8 md:grid-cols-3">
-              {steps.map((step, index) => (
-                <motion.div
-                  key={step.title}
-                  variants={cardVariants}
-                  className="rounded-3xl border border-white/10 bg-white/5 p-8"
-                  initial="hidden"
-                  animate={howItWorksInView ? "visible" : "hidden"}
-                  transition={{ delay: index * 0.12, duration: 0.6, ease }}
-                >
-                  <span className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-r from-emerald-400 to-blue-500 text-base font-semibold text-slate-950">
-                    {index + 1}
-                  </span>
-                  <h3 className="mt-6 text-xl font-semibold text-white">{step.title}</h3>
-                  <p className="mt-3 text-sm text-white/70">{step.description}</p>
-                </motion.div>
-              ))}
-            </div>
-          </div>
+          <motion.div variants={fadeIn} className="mx-auto max-w-3xl text-center">
+            <h2 className="text-3xl font-semibold text-white sm:text-4xl">How FitFinder keeps you ready</h2>
+            <p className="mt-4 text-base text-white/60">
+              Combine guided coaching with competitive reps in three seamless steps.
+            </p>
+          </motion.div>
+          <motion.div
+            variants={staggerContainer}
+            className="mt-16 grid gap-6 md:grid-cols-3"
+          >
+            {howItWorksSteps.map((step, index) => (
+              <motion.div
+                key={step.title}
+                variants={fadeIn}
+                className="flex h-full flex-col rounded-3xl border border-white/10 bg-white/5 p-8 text-left"
+              >
+                <span className="text-sm font-semibold uppercase tracking-[0.3em] text-white/50">Step {index + 1}</span>
+                <h3 className="mt-4 text-xl font-semibold text-white">{step.title}</h3>
+                <p className="mt-3 text-sm text-white/65">{step.description}</p>
+              </motion.div>
+            ))}
+          </motion.div>
         </motion.section>
 
         <motion.section
-          ref={testimonialsRef}
           id="testimonials"
+          ref={testimonialsRef}
+          variants={fadeIn}
           initial="hidden"
-          animate={testimonialsInView ? "visible" : "hidden"}
-          variants={sectionVariants}
-          className="bg-slate-900"
+          animate={testimonialsInView ? 'visible' : 'hidden'}
+          className="border-y border-white/5 bg-slate-900/80"
         >
-          <div className="mx-auto max-w-6xl px-6 py-24">
-            <div className="mx-auto max-w-2xl text-center">
-              <h2 className="text-3xl font-semibold text-white">Success stories from both sides</h2>
-              <p className="mt-4 text-base text-white/70">
-                Athletes lean on FitFinder for transformational coaching and competitive energy that keeps progress real.
+          <div className="mx-auto max-w-6xl px-6 py-24 lg:px-8">
+            <div className="mx-auto max-w-3xl text-center">
+              <h2 className="text-3xl font-semibold text-white sm:text-4xl">Athletes leveling up with FitFinder</h2>
+              <p className="mt-4 text-base text-white/60">
+                Real stories from competitors and coached athletes who combine training discipline with matchup energy.
               </p>
             </div>
-            <div className="mt-16 grid gap-8 md:grid-cols-2">
+            <div className="mt-16 grid gap-6 md:grid-cols-2">
               {testimonials.map((testimonial) => (
-                <motion.div
+                <motion.figure
                   key={testimonial.name}
-                  variants={cardVariants}
-                  className="flex h-full flex-col rounded-3xl border border-white/10 bg-white/5 p-8"
+                  variants={fadeIn}
+                  className="flex h-full flex-col justify-between rounded-3xl border border-white/10 bg-white/5 p-8"
                 >
-                  <p className="text-base text-white/80">“{testimonial.quote}”</p>
-                  <div className="mt-6 flex items-center gap-4">
-                    <div className="h-12 w-12 rounded-full bg-gradient-to-br from-emerald-400/60 to-blue-500/60" />
+                  <blockquote>
+                    <p className="text-base text-white/70">“{testimonial.quote}”</p>
+                  </blockquote>
+                  <figcaption className="mt-8 flex items-center gap-4">
+                    <img
+                      src={testimonial.avatar}
+                      alt={testimonial.name}
+                      className="h-12 w-12 rounded-full border border-white/10 object-cover"
+                    />
                     <div>
                       <p className="text-sm font-semibold text-white">{testimonial.name}</p>
-                      <p className="text-xs text-white/60">{testimonial.handle}</p>
-                      <p className="mt-1 text-xs text-white/50">{testimonial.role}</p>
+                      <p className="text-xs text-white/50">{testimonial.handle} • {testimonial.focus}</p>
                     </div>
-                  </div>
-                </motion.div>
+                  </figcaption>
+                </motion.figure>
               ))}
             </div>
           </div>
         </motion.section>
 
         <motion.section
-          ref={finalCtaRef}
+          ref={ctaRef}
+          variants={fadeIn}
           initial="hidden"
-          animate={finalCtaInView ? "visible" : "hidden"}
-          variants={sectionVariants}
-          className="bg-slate-950"
+          animate={ctaInView ? 'visible' : 'hidden'}
+          className="mx-auto max-w-6xl px-6 py-24 lg:px-8"
         >
-          <div className="mx-auto max-w-5xl overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-r from-emerald-500/20 via-blue-500/20 to-slate-900 px-8 py-16 text-center">
-            <h2 className="text-3xl font-semibold text-white">Start training and competing with FitFinder.</h2>
-            <p className="mt-4 text-base text-white/70">
-              Lock in your next coaching session, join a Versus matchup, and keep your entire performance calendar organized in one place.
-            </p>
-            <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
-              <button
-                type="button"
-                onClick={() => navigate(createPageUrl("Browse"))}
-                className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-emerald-400 to-blue-500 px-6 py-3 text-base font-semibold text-slate-950 shadow-lg shadow-emerald-500/30 transition hover:from-emerald-300 hover:to-blue-400"
-              >
-                Find Coaches
-              </button>
-              <button
-                type="button"
-                onClick={() => navigate(createPageUrl("Versus"))}
-                className="inline-flex items-center justify-center rounded-full border border-white/20 px-6 py-3 text-base font-semibold text-white transition hover:border-white/40 hover:bg-white/5"
-              >
-                Find Matchups
-              </button>
+          <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-emerald-500/20 via-blue-500/20 to-slate-900 p-10 text-center">
+            <div className="absolute -right-24 -top-24 h-64 w-64 rounded-full bg-emerald-500/30 blur-3xl" />
+            <div className="absolute -bottom-32 -left-20 h-72 w-72 rounded-full bg-blue-500/20 blur-3xl" />
+            <div className="relative">
+              <h2 className="text-3xl font-semibold text-white sm:text-4xl">Start training and competing with FitFinder.</h2>
+              <p className="mt-4 text-base text-white/70">
+                Secure your coaching roster, lock in pickup games, and keep your performance data synchronized in one place.
+              </p>
+              <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
+                <button
+                  onClick={() => handleNavigate(createPageUrl('Browse'))}
+                  className="inline-flex items-center justify-center rounded-full bg-white px-6 py-3 text-sm font-semibold text-slate-950 shadow-lg transition hover:bg-emerald-100"
+                >
+                  Find Coaches
+                </button>
+                <button
+                  onClick={() => handleNavigate(createPageUrl('Versus'))}
+                  className="inline-flex items-center justify-center rounded-full border border-white/40 px-6 py-3 text-sm font-semibold text-white transition hover:border-emerald-300 hover:text-emerald-200"
+                >
+                  Find Matchups
+                </button>
+              </div>
             </div>
           </div>
         </motion.section>
       </main>
 
-      <footer className="border-t border-white/10 bg-slate-950 py-12">
-        <div className="mx-auto flex max-w-6xl flex-col gap-8 px-6 text-sm text-white/60 md:flex-row md:items-center md:justify-between">
-          <div className="flex items-center gap-3">
-            <span className="flex h-9 w-9 items-center justify-center rounded-md bg-gradient-to-br from-emerald-400 to-blue-500 text-sm font-semibold text-slate-950">
-              FF
-            </span>
-            <div>
-              <p className="font-semibold text-white">FitFinder</p>
-              <p className="text-xs text-white/50">Training and Versus matchups in one app.</p>
-            </div>
-          </div>
-          <div className="flex flex-wrap gap-4">
-            <button
-              type="button"
-              onClick={() => navigate(createPageUrl("Browse"))}
-              className="text-white/70 transition hover:text-white"
-            >
-              Browse Coaches
-            </button>
-            <button
-              type="button"
-              onClick={() => navigate(createPageUrl("Versus"))}
-              className="text-white/70 transition hover:text-white"
-            >
-              Find Matchups
-            </button>
-            <button
-              type="button"
-              onClick={() => navigate(createPageUrl("Calendar"))}
-              className="text-white/70 transition hover:text-white"
-            >
-              Schedule
-            </button>
-            <button
-              type="button"
-              onClick={() => handleSmoothScroll("#how-it-works")}
-              className="text-white/70 transition hover:text-white"
-            >
+      <footer className="border-t border-white/10 bg-slate-950/80 py-10">
+        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-6 px-6 text-sm text-white/50 lg:flex-row lg:px-8">
+          <p>© {new Date().getFullYear()} FitFinder. Train smarter, compete harder.</p>
+          <div className="flex items-center gap-6">
+            <a href="#how-it-works" onClick={handleSmoothScroll} className="transition hover:text-white">
               How it works
+            </a>
+            <a href="#testimonials" onClick={handleSmoothScroll} className="transition hover:text-white">
+              Success stories
+            </a>
+            <button onClick={() => handleNavigate(createPageUrl('Calendar'))} className="transition hover:text-white">
+              View calendar
             </button>
           </div>
-          <p className="text-xs text-white/40">© {new Date().getFullYear()} FitFinder. All rights reserved.</p>
         </div>
       </footer>
     </div>
