@@ -1,17 +1,10 @@
-import { useMemo, useCallback } from "react";
-import { Calendar, DollarSign, MapPin, Users } from "lucide-react";
+import { useMemo, useState } from "react";
 
 import MapboxMap from "@/components/maps/MapboxMap";
-import { Badge } from "@/components/ui/badge";
-
-const dateFormatter = new Intl.DateTimeFormat(undefined, {
-  month: "short",
-  day: "numeric",
-  hour: "numeric",
-  minute: "2-digit",
-});
 
 export default function GamesMap({ games = [] }) {
+  const [selected, setSelected] = useState(null);
+
   const markers = useMemo(
     () =>
       games
@@ -27,72 +20,19 @@ export default function GamesMap({ games = [] }) {
           longitude: game.location.longitude,
           color: "#22c55e",
           game,
+          onClick: () =>
+            setSelected({
+              ...game,
+              name: game.title || game.sport?.replace(/_/g, " ") || "Pickup game",
+              image: game.image || game.cover_image,
+              type: game.sport ? game.sport.replace(/_/g, " ") : "Game",
+              price: game.cost_per_person,
+              rate: game.cost_per_person,
+              rating: game.rating,
+            }),
         })),
     [games]
   );
-
-  const renderPopup = useCallback(({ game }) => {
-    if (!game) return null;
-    const gameDate = game.date_time ? new Date(game.date_time) : null;
-    const sportLabel = game.sport ? game.sport.replace(/_/g, " ") : "Pickup game";
-    const location = game.location || {};
-    const maxPlayers = typeof game.max_players === "number" ? game.max_players : "--";
-    const currentPlayers = typeof game.current_players === "number" ? game.current_players : 0;
-    const costDisplay =
-      typeof game.cost_per_person === "number" && game.cost_per_person > 0
-        ? `$${game.cost_per_person} per player`
-        : "Free to join";
-
-    const title = game.title || "Pickup game";
-
-    return (
-      <div className="p-3 space-y-3">
-        <div className="space-y-1">
-          <h3 className="text-base font-semibold text-slate-900">{title}</h3>
-          <div className="text-sm text-slate-600 capitalize">{sportLabel}</div>
-        </div>
-
-        {gameDate && !Number.isNaN(gameDate.valueOf()) && (
-          <div className="flex items-center gap-2 text-sm text-slate-600">
-            <Calendar className="w-4 h-4 text-slate-400" />
-            <span>{dateFormatter.format(gameDate)}</span>
-          </div>
-        )}
-
-        <div className="flex items-center gap-2 text-sm text-slate-600">
-          <MapPin className="w-4 h-4 text-slate-400" />
-            <span>
-              {location.venue_name || "TBA"}
-              {location.city || location.state
-                ? ` • ${location.city || ""}${location.city && location.state ? ", " : ""}${location.state || ""}`
-                : ""}
-            </span>
-        </div>
-
-        <div className="flex items-center gap-2 text-sm text-slate-600">
-          <Users className="w-4 h-4 text-slate-400" />
-          <span>
-            {currentPlayers}/{maxPlayers} players
-          </span>
-        </div>
-
-        <div className="flex items-center gap-2 text-sm text-slate-600">
-          <DollarSign className="w-4 h-4 text-emerald-600" />
-          <span>{costDisplay}</span>
-        </div>
-
-        {Array.isArray(game.tags) && game.tags.length > 0 && (
-          <div className="flex flex-wrap gap-1 pt-1">
-            {game.tags.slice(0, 3).map((tag) => (
-              <Badge key={tag} variant="secondary" className="text-xs">
-                {String(tag).replace(/_/g, " ")}
-              </Badge>
-            ))}
-          </div>
-        )}
-      </div>
-    );
-  }, []);
 
   if (markers.length === 0) {
     return (
@@ -105,5 +45,56 @@ export default function GamesMap({ games = [] }) {
     );
   }
 
-  return <MapboxMap markers={markers} renderPopup={renderPopup} height="28rem" markerColor="#22c55e" />;
+  return (
+    <div className="relative">
+      <MapboxMap markers={markers} onMapClick={() => setSelected(null)} height="28rem" markerColor="#22c55e" />
+
+      {selected && (
+        <div className="fixed bottom-0 left-0 right-0 bg-white rounded-t-3xl shadow-xl z-50 animate-slide-up">
+          <div className="p-4">
+
+            {/* Top Image */}
+            <div className="w-full h-40 rounded-xl overflow-hidden bg-gray-200">
+              {selected.image && (
+                <img src={selected.image} className="w-full h-full object-cover" />
+              )}
+            </div>
+
+            {/* Title */}
+            <h2 className="mt-4 text-xl font-bold">{selected.name}</h2>
+
+            {/* Subtitle */}
+            <p className="text-gray-600">{selected.type || selected.sport}</p>
+
+            {/* ⭐ Rating (auto-detect from item.rating) */}
+            {selected.rating && (
+              <div className="flex items-center gap-1 mt-1">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <span
+                    key={i}
+                    className={i < Math.round(selected.rating) ? "text-yellow-400" : "text-gray-300"}
+                  >
+                    ★
+                  </span>
+                ))}
+                <span className="text-gray-500 text-sm ml-1">{selected.rating}/5</span>
+              </div>
+            )}
+
+            {/* Price */}
+            {selected.price || selected.rate ? (
+              <div className="text-blue-600 font-semibold text-lg mt-2">
+                ${selected.price || selected.rate}
+              </div>
+            ) : null}
+
+            {/* CTA Button */}
+            <button className="mt-3 w-full py-3 bg-blue-600 text-white rounded-xl font-bold">
+              {selected.type === "court" || selected.isVenue ? "View Venue" : "Book Session"}
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
 }

@@ -1,16 +1,10 @@
-import { useMemo, useCallback } from "react";
-import { DollarSign, Star } from "lucide-react";
+import { useMemo, useState } from "react";
 
 import MapboxMap from "@/components/maps/MapboxMap";
-import { Badge } from "@/components/ui/badge";
-
-const currencyFormatter = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-  maximumFractionDigits: 0,
-});
 
 export default function MapView({ professionals = [] }) {
+  const [selected, setSelected] = useState(null);
+
   const validProfessionals = useMemo(
     () =>
       professionals.filter(
@@ -30,58 +24,26 @@ export default function MapView({ professionals = [] }) {
         longitude: professional.location.longitude,
         color: "#2563eb",
         professional,
+        onClick: () =>
+          setSelected({
+            ...professional,
+            name: professional.full_name,
+            image: professional.profile_picture_url || professional.image,
+            type:
+              professional.primary_sport ||
+              (Array.isArray(professional.specialties)
+                ? professional.specialties[0]?.replace(/_/g, " ")
+                : undefined),
+            price:
+              typeof professional.hourly_rate === "number"
+                ? professional.hourly_rate
+                : undefined,
+            rate: professional.hourly_rate,
+            rating: professional.rating,
+          }),
       })),
     [validProfessionals]
   );
-
-  const renderPopup = useCallback(({ professional }) => {
-    if (!professional) return null;
-
-    const rateDisplay =
-      typeof professional.hourly_rate === "number"
-        ? currencyFormatter.format(professional.hourly_rate)
-        : "--";
-
-    return (
-      <div className="p-3 space-y-3">
-        <div>
-          <h3 className="text-base font-semibold text-slate-900">
-            {professional.full_name}
-          </h3>
-          <p className="text-sm text-slate-600">
-            {professional.location.address ||
-              `${professional.location.city}, ${professional.location.state}`}
-          </p>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <DollarSign className="w-4 h-4 text-emerald-600" />
-          <span className="font-semibold text-slate-900">
-            {rateDisplay === "--" ? "Contact for rate" : `${rateDisplay}/hour`}
-          </span>
-        </div>
-
-        {typeof professional.rating === "number" && (
-          <div className="flex items-center gap-1 text-sm">
-            <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-            <span className="font-medium text-slate-700">
-              {professional.rating.toFixed(1)} rating
-            </span>
-          </div>
-        )}
-
-        {Array.isArray(professional.specialties) && professional.specialties.length > 0 && (
-          <div className="flex flex-wrap gap-1">
-            {professional.specialties.slice(0, 3).map((specialty) => (
-              <Badge key={specialty} variant="secondary" className="text-xs">
-                {String(specialty).replace(/_/g, " ")}
-              </Badge>
-            ))}
-          </div>
-        )}
-      </div>
-    );
-  }, []);
 
   if (markers.length === 0) {
     return (
@@ -96,5 +58,56 @@ export default function MapView({ professionals = [] }) {
     );
   }
 
-  return <MapboxMap markers={markers} renderPopup={renderPopup} height="24rem" />;
+  return (
+    <div className="relative">
+      <MapboxMap markers={markers} onMapClick={() => setSelected(null)} height="24rem" />
+
+      {selected && (
+        <div className="fixed bottom-0 left-0 right-0 bg-white rounded-t-3xl shadow-xl z-50 animate-slide-up">
+          <div className="p-4">
+
+            {/* Top Image */}
+            <div className="w-full h-40 rounded-xl overflow-hidden bg-gray-200">
+              {selected.image && (
+                <img src={selected.image} className="w-full h-full object-cover" />
+              )}
+            </div>
+
+            {/* Title */}
+            <h2 className="mt-4 text-xl font-bold">{selected.name}</h2>
+
+            {/* Subtitle */}
+            <p className="text-gray-600">{selected.type || selected.sport}</p>
+
+            {/* ⭐ Rating (auto-detect from item.rating) */}
+            {selected.rating && (
+              <div className="flex items-center gap-1 mt-1">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <span
+                    key={i}
+                    className={i < Math.round(selected.rating) ? "text-yellow-400" : "text-gray-300"}
+                  >
+                    ★
+                  </span>
+                ))}
+                <span className="text-gray-500 text-sm ml-1">{selected.rating}/5</span>
+              </div>
+            )}
+
+            {/* Price */}
+            {selected.price || selected.rate ? (
+              <div className="text-blue-600 font-semibold text-lg mt-2">
+                ${selected.price || selected.rate}
+              </div>
+            ) : null}
+
+            {/* CTA Button */}
+            <button className="mt-3 w-full py-3 bg-blue-600 text-white rounded-xl font-bold">
+              {selected.type === "court" || selected.isVenue ? "View Venue" : "Book Session"}
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
 }
