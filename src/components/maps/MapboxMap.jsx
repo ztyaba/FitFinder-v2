@@ -1,6 +1,5 @@
 import { useEffect, useRef } from "react";
 import mapboxgl from "mapbox-gl";
-import { createRoot } from "react-dom/client";
 import "mapbox-gl/dist/mapbox-gl.css";
 
 import {
@@ -14,7 +13,7 @@ mapboxgl.accessToken = MAPBOX_ACCESS_TOKEN;
 
 const DEFAULT_HEIGHT = "24rem";
 
-export default function MapboxMap({ markers = [], renderPopup, height = DEFAULT_HEIGHT, markerColor = "#2563eb" }) {
+export default function MapboxMap({ markers = [], height = DEFAULT_HEIGHT, markerColor = "#2563eb", onMapClick }) {
   const containerRef = useRef(null);
   const mapRef = useRef(null);
   const markerRefs = useRef([]);
@@ -32,11 +31,8 @@ export default function MapboxMap({ markers = [], renderPopup, height = DEFAULT_
     mapRef.current.addControl(new mapboxgl.NavigationControl({ showCompass: true }), "top-right");
 
     return () => {
-      markerRefs.current.forEach(({ marker, root }) => {
+      markerRefs.current.forEach(({ marker }) => {
         marker.remove();
-        if (root) {
-          root.unmount();
-        }
       });
       markerRefs.current = [];
 
@@ -50,11 +46,8 @@ export default function MapboxMap({ markers = [], renderPopup, height = DEFAULT_
   useEffect(() => {
     if (!mapRef.current) return;
 
-    markerRefs.current.forEach(({ marker, root }) => {
+    markerRefs.current.forEach(({ marker }) => {
       marker.remove();
-      if (root) {
-        root.unmount();
-      }
     });
     markerRefs.current = [];
 
@@ -78,26 +71,14 @@ export default function MapboxMap({ markers = [], renderPopup, height = DEFAULT_
       const marker = new mapboxgl.Marker({ color: markerData.color || markerColor })
         .setLngLat([longitude, latitude]);
 
-      let popupRoot = null;
-      if (typeof renderPopup === "function") {
-        const popupContent = renderPopup(markerData);
-        if (popupContent) {
-          const popupNode = document.createElement("div");
-          popupRoot = createRoot(popupNode);
-          popupRoot.render(popupContent);
-
-          const popup = new mapboxgl.Popup({ offset: 12, closeButton: true }).setDOMContent(popupNode);
-          popup.on("close", () => {
-            if (popupRoot) {
-              popupRoot.unmount();
-            }
-          });
-          marker.setPopup(popup);
+      marker.getElement().addEventListener("click", () => {
+        if (typeof markerData.onClick === "function") {
+          markerData.onClick(markerData);
         }
-      }
+      });
 
       marker.addTo(mapRef.current);
-      markerRefs.current.push({ marker, root: popupRoot });
+      markerRefs.current.push({ marker });
       bounds.extend([longitude, latitude]);
     });
 
@@ -107,7 +88,25 @@ export default function MapboxMap({ markers = [], renderPopup, height = DEFAULT_
     } else {
       mapRef.current.fitBounds(bounds, { padding: 60, maxZoom: 14, duration: 1000 });
     }
-  }, [markers, renderPopup, markerColor]);
+  }, [markers, markerColor]);
+
+  useEffect(() => {
+    if (!mapRef.current) return;
+
+    const handleClick = (e) => {
+      if (typeof onMapClick === "function") {
+        onMapClick(e);
+      }
+    };
+
+    mapRef.current.on("click", handleClick);
+
+    return () => {
+      if (mapRef.current) {
+        mapRef.current.off("click", handleClick);
+      }
+    };
+  }, [onMapClick]);
 
   return (
     <div className="relative w-full overflow-hidden rounded-2xl" style={{ minHeight: height }}>

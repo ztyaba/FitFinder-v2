@@ -1,10 +1,10 @@
-import { useMemo, useCallback } from "react";
-import { DollarSign, MapPin, Star } from "lucide-react";
+import { useMemo, useState } from "react";
 
 import MapboxMap from "@/components/maps/MapboxMap";
-import { Badge } from "@/components/ui/badge";
 
 export default function CourtsMap({ courts = [] }) {
+  const [selected, setSelected] = useState(null);
+
   const markers = useMemo(
     () =>
       courts
@@ -20,57 +20,24 @@ export default function CourtsMap({ courts = [] }) {
           longitude: court.location.longitude,
           color: "#7c3aed",
           court,
+          onClick: () =>
+            setSelected({
+              ...court,
+              name: court.name,
+              image: court.image || court.photo,
+              type: "court",
+              price: court.hourly_rate,
+              rate: court.hourly_rate,
+              rating: court.rating,
+              isVenue: true,
+              sport:
+                Array.isArray(court.sports_supported) && court.sports_supported.length > 0
+                  ? court.sports_supported[0].replace(/_/g, " ")
+                  : court.venue_name,
+            }),
         })),
     [courts]
   );
-
-  const renderPopup = useCallback(({ court }) => {
-    if (!court) return null;
-    const location = court.location || {};
-    const hourlyRate = typeof court.hourly_rate === "number" ? `$${court.hourly_rate} per hour` : "Contact for pricing";
-    const sports = Array.isArray(court.sports_supported) ? court.sports_supported : [];
-
-    return (
-      <div className="p-3 space-y-3">
-        <div className="space-y-1">
-          <h3 className="text-base font-semibold text-slate-900">{court.name}</h3>
-          <p className="text-sm text-slate-600">{court.venue_name || "Community venue"}</p>
-        </div>
-
-        <div className="flex items-center gap-2 text-sm text-slate-600">
-          <MapPin className="w-4 h-4 text-slate-400" />
-            <span>
-              {location.address || location.venue_name || "Location TBA"}
-              {location.city || location.state
-                ? ` • ${location.city || ""}${location.city && location.state ? ", " : ""}${location.state || ""}`
-                : ""}
-            </span>
-        </div>
-
-        <div className="flex items-center gap-2 text-sm text-slate-600">
-          <DollarSign className="w-4 h-4 text-emerald-600" />
-          <span>{hourlyRate}</span>
-        </div>
-
-        {typeof court.rating === "number" && (
-          <div className="flex items-center gap-1 text-sm text-slate-600">
-            <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-            <span>{court.rating.toFixed(1)} rating</span>
-          </div>
-        )}
-
-        {sports.length > 0 && (
-          <div className="flex flex-wrap gap-1 pt-1">
-            {sports.slice(0, 3).map((sport) => (
-              <Badge key={sport} variant="secondary" className="text-xs capitalize">
-                {sport.replace(/_/g, " ")}
-              </Badge>
-            ))}
-          </div>
-        )}
-      </div>
-    );
-  }, []);
 
   if (markers.length === 0) {
     return (
@@ -83,5 +50,56 @@ export default function CourtsMap({ courts = [] }) {
     );
   }
 
-  return <MapboxMap markers={markers} renderPopup={renderPopup} height="28rem" markerColor="#7c3aed" />;
+  return (
+    <div className="relative">
+      <MapboxMap markers={markers} onMapClick={() => setSelected(null)} height="28rem" markerColor="#7c3aed" />
+
+      {selected && (
+        <div className="fixed bottom-0 left-0 right-0 bg-white rounded-t-3xl shadow-xl z-50 animate-slide-up">
+          <div className="p-4">
+
+            {/* Top Image */}
+            <div className="w-full h-40 rounded-xl overflow-hidden bg-gray-200">
+              {selected.image && (
+                <img src={selected.image} className="w-full h-full object-cover" />
+              )}
+            </div>
+
+            {/* Title */}
+            <h2 className="mt-4 text-xl font-bold">{selected.name}</h2>
+
+            {/* Subtitle */}
+            <p className="text-gray-600">{selected.type || selected.sport}</p>
+
+            {/* ⭐ Rating (auto-detect from item.rating) */}
+            {selected.rating && (
+              <div className="flex items-center gap-1 mt-1">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <span
+                    key={i}
+                    className={i < Math.round(selected.rating) ? "text-yellow-400" : "text-gray-300"}
+                  >
+                    ★
+                  </span>
+                ))}
+                <span className="text-gray-500 text-sm ml-1">{selected.rating}/5</span>
+              </div>
+            )}
+
+            {/* Price */}
+            {selected.price || selected.rate ? (
+              <div className="text-blue-600 font-semibold text-lg mt-2">
+                ${selected.price || selected.rate}
+              </div>
+            ) : null}
+
+            {/* CTA Button */}
+            <button className="mt-3 w-full py-3 bg-blue-600 text-white rounded-xl font-bold">
+              {selected.type === "court" || selected.isVenue ? "View Venue" : "Book Session"}
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
 }
